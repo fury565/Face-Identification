@@ -111,9 +111,6 @@ def close_camera():
     button1["state"]="normal"
 
 global cam, selectedfile,idPrediction
-red=(255,0,0)
-yellow=(0,255,0)
-green=(0,0,255)
 cam = cv.VideoCapture(0)
 width = cam.get(cv.CAP_PROP_FRAME_WIDTH)
 height = cam.get(cv.CAP_PROP_FRAME_HEIGHT)
