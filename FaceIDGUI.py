@@ -1,7 +1,3 @@
-#osjetljiv na odbljesak naočala(manjak preciznosti za oči)
-#prekrivanje oka povećava podudaranje???
-#šeširi??
-#brada-brada 95-100  brada-nebrada 115-125
 import tkinter
 from tkinter import filedialog
 import numpy as np
@@ -23,22 +19,24 @@ def compare_predictions(first,second):
         result=distance.euclidean(first,second)
         return result
 def extract_face(detector,filename, required_size=(224, 224)):
-        with detector.FaceDetection(model_selection=0, min_detection_confidence=0.6) as face_detection:
+        with detector.FaceDetection(model_selection=0, min_detection_confidence=0.7) as face_detection:
                 image = cv.imread(filename)
+                imwidth=image.shape[1]
+                imheight=image.shape[0]
                 results = face_detection.process(cv.cvtColor(image, cv.COLOR_BGR2RGB))
                 if not results.detections:
                         return []
                 for detection in results.detections:
                         bbox = detection.location_data.relative_bounding_box
-                        x1=int(bbox.xmin*width)
-                        x2=int((bbox.xmin+bbox.width)*width)
-                        y1=int(bbox.ymin*height)
-                        y2=int((bbox.ymin+bbox.height)*height)
+                        x1=int(bbox.xmin*imwidth)
+                        x2=int((bbox.xmin+bbox.width)*imwidth)
+                        y1=int(bbox.ymin*imheight)
+                        y2=int((bbox.ymin+bbox.height)*imheight)
                         face = image[y1:y2, x1:x2]
                         face = Image.fromarray(face)
                         face = face.resize(required_size)
                         pixels = np.asarray(face)
-                        #pixels=cv.GaussianBlur(pixels,(3,3),cv.BORDER_DEFAULT)
+                        #cv.imshow("Slika",pixels)
                 return pixels
 
 def select_file():
@@ -62,7 +60,7 @@ def open_camera():
     cam = cv.VideoCapture(0)
     width = cam.get(cv.CAP_PROP_FRAME_WIDTH)
     height = cam.get(cv.CAP_PROP_FRAME_HEIGHT)
-    with detector.FaceDetection(model_selection=1, min_detection_confidence=0.6) as face_detection:
+    with detector.FaceDetection(model_selection=0, min_detection_confidence=0.7) as face_detection:
             while True:
                 ret, frame = cam.read()
                 if not ret:
@@ -86,13 +84,13 @@ def open_camera():
                                         pixels = np.asarray(face)
                                         prediction=predict_face(model,pixels)
                                         compare=compare_predictions(prediction,idPrediction)
-                                        #cv.putText(frame,str(int(compare)),(x2,y2),cv.FONT_HERSHEY_SIMPLEX,0.75,(255,0,0))
+                                        cv.putText(frame,str(int(compare)),(x2,y2),cv.FONT_HERSHEY_SIMPLEX,0.75,(255,0,0))
                                         if compare>130:
-                                                text_holder.configure(text="ID doesn't match",bg='#f00')
+                                                text_holder.configure(text="Face doesn't match",bg='#f00')
                                         elif compare>120:
                                                 text_holder.configure(text="Possible match",bg='#ff0')
                                         else:
-                                                text_holder.configure(text="ID matches",bg='#0f0')
+                                                text_holder.configure(text="Face matches",bg='#0f0')
                                 except Exception as e:
                                         continue
                 img_update = ImageTk.PhotoImage(Image.fromarray(frame))
