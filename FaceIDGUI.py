@@ -7,7 +7,6 @@ import mediapipe as mp
 from keras_vggface.vggface import VGGFace
 from keras_vggface.utils import preprocess_input
 from scipy.spatial import distance
-from matplotlib import pyplot
 
 def predict_face(model,facearray):
         pixels = facearray.astype('float32')
