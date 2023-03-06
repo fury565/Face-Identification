@@ -41,7 +41,7 @@ def extract_face(detector,filename, required_size=(224, 224)):
 
 def select_file():
         global selectedfile, idPrediction
-        filetypes = (('jpg files', '*.jpg'),('All files', '*.*'))
+        filetypes = (('jpg files', '*.jpg'),('png files', '*.png'))
         selectedfile = filedialog.askopenfilename(title='Open a file',initialdir='/',filetypes=filetypes)
         if len(selectedfile)!=0:
                 facearray=extract_face(detector,selectedfile)
@@ -84,7 +84,7 @@ def open_camera():
                                         pixels = np.asarray(face)
                                         prediction=predict_face(model,pixels)
                                         compare=compare_predictions(prediction,idPrediction)
-                                        cv.putText(frame,str(int(compare)),(x2,y2),cv.FONT_HERSHEY_SIMPLEX,0.75,(255,0,0))
+                                        #cv.putText(frame,str(int(compare)),(x2,y2),cv.FONT_HERSHEY_SIMPLEX,0.75,(255,0,0))
                                         if compare>130:
                                                 text_holder.configure(text="Face doesn't match",bg='#f00')
                                         elif compare>120:
@@ -122,9 +122,10 @@ idPrediction=[]
 
 window=tkinter.Tk()
 window.title("Face Identification")
-frame=np.random.randint(0,255,[100,100,3],dtype='uint8')
+frame=np.random.randint(0,255,[int(height),int(width),3],dtype='uint8')
 img = ImageTk.PhotoImage(Image.fromarray(frame))
 image_holder=tkinter.Label(window)
+image_holder.configure(image=img)
 image_holder.grid(row=0,column=0,columnspan=3,pady=1,padx=10)
 message="Waiting for ID selection"
 text_holder=tkinter.Label(window,text=message,bg='#fff')
@@ -139,4 +140,5 @@ button2.grid(row=1,column=2,pady=10,padx=10,rowspan=2)
 button2.config(height=1*buttonsize,width=20)
 open_button = tkinter.Button(window,text='Select file',command=select_file)
 open_button.grid(row=2,column=1,pady=1,padx=1)
+image_holder.update()
 window.mainloop()
